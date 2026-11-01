@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Compass, Search, Loader2, Sparkles, Filter, ExternalLink, SlidersHorizontal, AlertCircle } from 'lucide-react';
+import { Compass, Search, Loader2, Sparkles, SlidersHorizontal, ExternalLink, BarChart3, ArrowRight, User } from 'lucide-react';
 import { formatNumber } from '../utils/helpers';
 
-export default function NicheTab({ service, onAnalyzeAi, onRequireKey }) {
+export default function NicheTab({ service, onAnalyzeAi, onRequireKey, onInspectChannel }) {
   const [query, setQuery] = useState('');
   const [timeframe, setTimeframe] = useState('month');
   const [regionCode, setRegionCode] = useState('ID');
@@ -211,13 +211,18 @@ export default function NicheTab({ service, onAnalyzeAi, onRequireKey }) {
 
           {/* Outliers Grid */}
           <div className="space-y-4">
-            <h4 className="text-lg font-black text-slate-900 dark:text-white">
-              Video Outlier (Channel Kecil dengan Ledakan Views)
-            </h4>
+            <div className="flex items-center justify-between">
+              <h4 className="text-lg font-black text-slate-900 dark:text-white">
+                Video Outlier (Channel Kecil dengan Ledakan Views)
+              </h4>
+              <span className="text-xs text-slate-500 font-medium">
+                {result.outliers.length} video ditemukan
+              </span>
+            </div>
 
             {result.outliers.length === 0 ? (
               <div className="p-8 text-center bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 text-slate-400 text-sm">
-                Tidak ada video outlier dengan rasio $\ge {minRatio}\times$ dan $\ge {formatNumber(minViews)}$ views pada topik ini. Coba turunkan slider batas rasio atau cari kata kunci lain.
+                Tidak ada video outlier dengan rasio &ge; {minRatio}x dan &ge; {formatNumber(minViews)} views pada topik ini. Coba turunkan slider batas rasio atau cari kata kunci lain.
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -226,39 +231,94 @@ export default function NicheTab({ service, onAnalyzeAi, onRequireKey }) {
                     key={v.id}
                     className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl overflow-hidden shadow-sm flex flex-col justify-between group hover:border-slate-300 dark:hover:border-slate-700 transition-all"
                   >
+                    {/* Thumbnail & Outlier Ratio Badge */}
                     <div className="relative aspect-video overflow-hidden">
-                      <img
-                        src={v.thumbnail}
-                        alt={v.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
+                      <a
+                        href={`https://youtube.com/watch?v=${v.id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="block w-full h-full"
+                      >
+                        <img
+                          src={v.thumbnail}
+                          alt={v.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </a>
                       <span className="absolute top-2 left-2 px-2.5 py-1 rounded-xl bg-amber-500 text-slate-950 text-xs font-black shadow-md flex items-center gap-1">
                         🔥 {v.ratio.toFixed(1)}x dari Subs!
                       </span>
+                      <a
+                        href={`https://youtube.com/watch?v=${v.id}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/70 hover:bg-black text-white text-xs transition-colors"
+                        title="Tonton di YouTube"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
                     </div>
 
                     <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
-                      <div className="space-y-1">
-                        <h5 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2" title={v.title}>
+                      <div className="space-y-1.5">
+                        <a
+                          href={`https://youtube.com/watch?v=${v.id}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                          title={v.title}
+                        >
                           {v.title}
-                        </h5>
-                        <p className="text-[11px] text-slate-500">
-                          {v.channelTitle} ({v.subs ? `${formatNumber(v.subs)} subs` : 'Subs privat'})
-                        </p>
-                      </div>
+                        </a>
 
-                      <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                        <div>
-                          <span className="text-xs font-extrabold text-slate-900 dark:text-white block">
-                            {formatNumber(v.views)} views
+                        {/* Channel link with avatar/icon */}
+                        <div className="flex items-center gap-1 text-[11px] text-slate-500">
+                          <User className="w-3 h-3 text-slate-400 shrink-0" />
+                          <a
+                            href={`https://youtube.com/channel/${v.channelId}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="hover:underline font-semibold text-slate-700 dark:text-slate-300 line-clamp-1"
+                            title="Buka Channel di YouTube"
+                          >
+                            {v.channelTitle}
+                          </a>
+                          <span className="shrink-0">
+                            ({v.subs ? `${formatNumber(v.subs)} subs` : 'Privat'})
                           </span>
                         </div>
-                        <button
-                          onClick={() => onAnalyzeAi(v)}
-                          className="px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white font-bold text-[11px] flex items-center gap-1 shadow-sm"
-                        >
-                          <Sparkles className="w-3 h-3" /> Bedah AI
-                        </button>
+                      </div>
+
+                      {/* Views & Action Buttons */}
+                      <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="font-extrabold text-slate-900 dark:text-white">
+                            {formatNumber(v.views)} views
+                          </span>
+                          <span className="text-[11px] text-slate-400">
+                            {new Date(v.publishedAt).toLocaleDateString('id-ID')}
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          {/* Bedah SEO / Bedah Kompetitor Button */}
+                          <button
+                            onClick={() => onInspectChannel && onInspectChannel(v.channelId)}
+                            className="flex-1 py-1.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-[11px] flex items-center justify-center gap-1.5 transition-colors border border-slate-200 dark:border-slate-700"
+                            title="Bedah 50 video & SEO tags channel ini di tab Riset Kompetitor"
+                          >
+                            <BarChart3 className="w-3.5 h-3.5 text-indigo-500" /> Bedah SEO →
+                          </button>
+
+                          {/* Bedah AI Button */}
+                          <button
+                            onClick={() => onAnalyzeAi(v)}
+                            className="py-1.5 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white font-bold text-[11px] flex items-center justify-center gap-1 shadow-sm shrink-0"
+                            title="Buat naskah, hook, dan prompt thumbnail AI dari video ini"
+                          >
+                            <Sparkles className="w-3 h-3" /> Bedah AI
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>

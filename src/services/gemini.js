@@ -36,3 +36,4 @@ export const generateGeminiContent = async (apiKey, prompt) => {
   }
   return text;
 };
+

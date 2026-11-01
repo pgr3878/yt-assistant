@@ -38,7 +38,7 @@ export default function App() {
   const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [selectedAiVideo, setSelectedAiVideo] = useState(null);
 
-  // Competitor ref/query trigger when switching from favorites
+  // Competitor ref/query trigger when switching from favorites or niche/trend
   const [prefilledTarget, setPrefilledTarget] = useState(null);
 
   // Sync dark mode class
@@ -80,9 +80,11 @@ export default function App() {
     });
   };
 
-  const handleSelectFromFavorites = (channelId) => {
+  // Inspect channel from NicheTab, TrendTab, or FavoritesTab
+  const handleInspectChannel = (channelId) => {
     setActiveTab('competitor');
-    setPrefilledTarget(channelId);
+    setPrefilledTarget({ id: channelId, timestamp: Date.now() });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleOpenAi = (video) => {
@@ -103,9 +105,9 @@ export default function App() {
         favoriteCount={favorites.length}
       />
 
-      {/* Main Container */}
+      {/* Main Container: Persistent Mounting (Display Toggle) so states never reset */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
-        {activeTab === 'competitor' && (
+        <div style={{ display: activeTab === 'competitor' ? 'block' : 'none' }}>
           <CompetitorTab
             service={youtubeService}
             onAnalyzeAi={handleOpenAi}
@@ -114,36 +116,38 @@ export default function App() {
             onRequireKey={() => setIsKeyModalOpen(true)}
             initialTarget={prefilledTarget}
           />
-        )}
+        </div>
 
-        {activeTab === 'trend' && (
+        <div style={{ display: activeTab === 'trend' ? 'block' : 'none' }}>
           <TrendTab
             service={youtubeService}
             onAnalyzeAi={handleOpenAi}
             onRequireKey={() => setIsKeyModalOpen(true)}
+            onInspectChannel={handleInspectChannel}
           />
-        )}
+        </div>
 
-        {activeTab === 'niche' && (
+        <div style={{ display: activeTab === 'niche' ? 'block' : 'none' }}>
           <NicheTab
             service={youtubeService}
             onAnalyzeAi={handleOpenAi}
             onRequireKey={() => setIsKeyModalOpen(true)}
+            onInspectChannel={handleInspectChannel}
           />
-        )}
+        </div>
 
-        {activeTab === 'shuffler' && (
+        <div style={{ display: activeTab === 'shuffler' ? 'block' : 'none' }}>
           <ShufflerTab />
-        )}
+        </div>
 
-        {activeTab === 'favorites' && (
+        <div style={{ display: activeTab === 'favorites' ? 'block' : 'none' }}>
           <FavoritesTab
             favorites={favorites}
-            onSelectChannel={handleSelectFromFavorites}
+            onSelectChannel={handleInspectChannel}
             onRemoveFavorite={handleRemoveFavorite}
             onGoToCompetitor={() => setActiveTab('competitor')}
           />
-        )}
+        </div>
       </main>
 
       {/* Footer */}

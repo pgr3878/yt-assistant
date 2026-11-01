@@ -107,3 +107,4 @@ export default function FavoritesTab({ favorites = [], onSelectChannel, onRemove
     </div>
   );
 }
+

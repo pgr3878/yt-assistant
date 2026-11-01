@@ -85,3 +85,4 @@ Ikuti instruksi di layar, pilih default pengaturan.
 5. Salin key tersebut dan masukkan ke ikon kunci di web YT Analyzer Pro.
 
 *(Opsional) Dapatkan juga Google Gemini API Key gratis di [Google AI Studio](https://aistudio.google.com/app/apikey) untuk analisis AI langsung.*
+

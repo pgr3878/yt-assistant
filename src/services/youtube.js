@@ -282,7 +282,10 @@ export class YouTubeService {
           subs,
           ratio,
           thumbnail: v.snippet.thumbnails?.medium?.url || v.snippet.thumbnails?.default?.url,
-          publishedAt: v.snippet.publishedAt
+          publishedAt: v.snippet.publishedAt,
+          snippet: v.snippet,
+          statistics: v.statistics,
+          contentDetails: v.contentDetails
         });
       }
     });
@@ -321,3 +324,4 @@ export class YouTubeService {
 }
 
 export const youtubeService = new YouTubeService();
+

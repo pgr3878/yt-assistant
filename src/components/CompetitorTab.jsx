@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   Loader2, 
@@ -34,15 +34,20 @@ export default function CompetitorTab({
   onRequireKey,
   initialTarget
 }) {
-  const [inputVal, setInputVal] = useState(initialTarget || '');
+  const [inputVal, setInputVal] = useState(
+    initialTarget ? (typeof initialTarget === 'object' ? initialTarget.id : initialTarget) : ''
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Trigger search when initialTarget changes
-  React.useEffect(() => {
+  // Trigger search when initialTarget changes (e.g. from NicheTab or TrendTab "Bedah SEO")
+  useEffect(() => {
     if (initialTarget) {
-      setInputVal(initialTarget);
-      handleSearch(initialTarget);
+      const targetId = typeof initialTarget === 'object' ? initialTarget.id : initialTarget;
+      if (targetId) {
+        setInputVal(targetId);
+        handleSearch(targetId);
+      }
     }
   }, [initialTarget]);
 

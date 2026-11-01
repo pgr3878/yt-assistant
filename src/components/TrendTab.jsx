@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Flame, Globe, Filter, Loader2, Sparkles, ExternalLink, TrendingUp } from 'lucide-react';
+import { Flame, Globe, Filter, Loader2, Sparkles, ExternalLink, TrendingUp, BarChart3, User } from 'lucide-react';
 import { formatNumber, calculateVPH, parseDuration, formatDuration } from '../utils/helpers';
 
-export default function TrendTab({ service, onAnalyzeAi, onRequireKey }) {
+export default function TrendTab({ service, onAnalyzeAi, onRequireKey, onInspectChannel }) {
   const [regionCode, setRegionCode] = useState('ID');
   const [categoryId, setCategoryId] = useState('0');
   const [loading, setLoading] = useState(false);
@@ -171,11 +171,18 @@ export default function TrendTab({ service, onAnalyzeAi, onRequireKey }) {
                 className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800/80 rounded-3xl overflow-hidden shadow-sm flex flex-col justify-between group hover:border-slate-300 dark:hover:border-slate-700 transition-all"
               >
                 <div className="relative aspect-video overflow-hidden">
-                  <img
-                    src={v.snippet.thumbnails?.high?.url || v.snippet.thumbnails?.medium?.url}
-                    alt={v.snippet.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
+                  <a
+                    href={`https://youtube.com/watch?v=${v.id}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block w-full h-full"
+                  >
+                    <img
+                      src={v.snippet.thumbnails?.high?.url || v.snippet.thumbnails?.medium?.url}
+                      alt={v.snippet.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </a>
                   <span className="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/75 text-white text-[11px] font-bold">
                     #{idx + 1}
                   </span>
@@ -188,25 +195,53 @@ export default function TrendTab({ service, onAnalyzeAi, onRequireKey }) {
                 </div>
 
                 <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
-                  <div className="space-y-1">
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2" title={v.snippet.title}>
+                  <div className="space-y-1.5">
+                    <a
+                      href={`https://youtube.com/watch?v=${v.id}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                      title={v.snippet.title}
+                    >
                       {v.snippet.title}
-                    </h4>
-                    <p className="text-[11px] text-slate-500 line-clamp-1">
-                      {v.snippet.channelTitle}
-                    </p>
+                    </a>
+                    <div className="flex items-center gap-1 text-[11px] text-slate-500">
+                      <User className="w-3 h-3 text-slate-400 shrink-0" />
+                      <a
+                        href={`https://youtube.com/channel/${v.snippet.channelId}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="hover:underline font-semibold text-slate-700 dark:text-slate-300 line-clamp-1"
+                        title="Buka Channel di YouTube"
+                      >
+                        {v.snippet.channelTitle}
+                      </a>
+                    </div>
                   </div>
 
-                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                    <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200">
-                      {formatNumber(views)} views
-                    </span>
-                    <button
-                      onClick={() => onAnalyzeAi(v)}
-                      className="px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white font-bold text-[11px] flex items-center gap-1 shadow-sm"
-                    >
-                      <Sparkles className="w-3 h-3" /> Bedah AI
-                    </button>
+                  <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="font-extrabold text-slate-800 dark:text-slate-200">
+                        {formatNumber(views)} views
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => onInspectChannel && onInspectChannel(v.snippet.channelId)}
+                        className="flex-1 py-1 px-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-[11px] flex items-center justify-center gap-1 transition-colors border border-slate-200 dark:border-slate-700"
+                        title="Bedah 50 video & SEO tags channel ini di tab Riset Kompetitor"
+                      >
+                        <BarChart3 className="w-3 h-3 text-indigo-500" /> Bedah SEO →
+                      </button>
+
+                      <button
+                        onClick={() => onAnalyzeAi(v)}
+                        className="px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-400 hover:to-rose-400 text-white font-bold text-[11px] flex items-center gap-1 shadow-sm shrink-0"
+                      >
+                        <Sparkles className="w-3 h-3" /> Bedah AI
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

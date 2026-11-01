@@ -79,3 +79,4 @@ export const downloadCSV = (rows, filename = 'YT_Analysis.csv') => {
   link.click();
   document.body.removeChild(link);
 };
+
